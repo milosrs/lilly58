@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
 #include "features/bongo_cat.h"
+#include <stdio.h>
 
 enum layer_number {
   _QWERTY = 0,
@@ -9,6 +10,8 @@ enum layer_number {
   _DVORAK,
   _COLEMAK
 };
+
+char wpm_str[10];
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -44,16 +47,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|   [   |    |    ]  |------+------+------+------+------+------|
  * |LShift|   ;  |   Q  |   J  |   K  |   X  |-------|    |-------|   B  |   M  |   W  |   V  |   Z  |   =  |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
- *                   | Alt  |  Cmd   | Ctrl | /Space  /       \Enter \  |BackSP| Del  |LOWER |
+ *                   | LOWER| LALT |DELETE| /Space  /       \Enter \  |BSP   |LGUI  | RAISE|
  *                   |      |      |      |/       /         \      \ |      |      |      |
  *                   `----------------------------'           '------''--------------------'
  */
- [_DVORAK] = LAYOUT_wrapper(
-	_____________________NUM_LEFT_______________________,                 _____________________NUM_RIGHT______________________, 
-	_____________________DVORAK_L1______________________,                 _____________________DVORAK_R1______________________, 
-	_____________________DVORAK_L2______________________,                 _____________________DVORAK_R2______________________, 
-	_____________________DVORAK_L3______________________, T_LBRC, T_RBRC, _____________________DVORAK_R3______________________, 
-                              _____________MOD_LEFT_____________, _____________MOD_RIGHT____________ 
+ [_DVORAK] = LAYOUT(
+	KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5,                                KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS, 
+	KC_TAB, KC_QUOT, KC_COMM, KC_DOT, KC_P, KC_Y,                        KC_F, KC_G, KC_C, KC_R, KC_L, KC_BSLS, 
+	KC_ESC, KC_A, KC_O, KC_E, KC_U, KC_I,                                KC_D, KC_H, KC_T, KC_N, KC_S, KC_SLSH, 
+	KC_LSFT, KC_SCLN, KC_Q, KC_J, KC_K, KC_X,       KC_LBRC, KC_RBRC,    KC_B, KC_M, KC_W, KC_V, KC_Z, KC_EQL, 
+                              TO(_LOWER), KC_LALT, KC_DELETE,  KC_SPC, KC_ENT, KC_BSPC, KC_LGUI, TO(_RAISE)
 	),
 
 /* COLEMAK
@@ -66,16 +69,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|   [   |    |    ]  |------+------+------+------+------+------|
  * |LShift|   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   K  |   M  |   ,  |   .  |   /  |   =  |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
- *                   | Alt  |  Cmd   | Ctrl | /Space  /       \Enter \  |BackSP| Del  |LOWER |
+ *                   | LOWER| LALT |DELETE| /Space  /       \Enter \  |BSP   |LGUI  | RAISE|
  *                   |      |      |      |/       /         \      \ |      |      |      |
  *                   `----------------------------'           '------''--------------------'
  */
- [_COLEMAK] = LAYOUT_wrapper(
-	_____________________NUM_LEFT_______________________,                 _____________________NUM_RIGHT______________________, 
-	_____________________COLEMAK_L1_____________________,                 _____________________COLEMAK_R1_____________________, 
-	_____________________COLEMAK_L2_____________________,                 _____________________COLEMAK_R2_____________________, 
-	_____________________COLEMAK_L3_____________________, T_LBRC, T_RBRC, _____________________COLEMAK_R3_____________________, 
-                              _____________MOD_LEFT_____________, _____________MOD_RIGHT____________ 
+ [_COLEMAK] = LAYOUT(
+	KC_GRV, KC_1, KC_2, KC_3, KC_4, KC_5,                                KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS, 
+	KC_TAB, KC_Q, KC_W, KC_F, KC_P, KC_G,                                KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSLS, 
+	KC_ESC, KC_A, KC_R, KC_S, KC_T, KC_D,                                KC_H, KC_N, KC_E, KC_I, KC_O, KC_QUOT, 
+	KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B,        KC_LBRC, KC_RBRC,      KC_K, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_EQL, 
+                              TO(_LOWER), KC_LALT, KC_DELETE,  KC_SPC, KC_ENT, KC_BSPC, KC_LGUI, TO(_RAISE)
 	),
 /* LOWER
  * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -95,8 +98,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                     KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
   KC_PLUS, KC_QUES, XXXXXXX, KC_UP, XXXXXXX, XXXXXXX,                     KC_GRV,  KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,
   KC_EQL, KC_COLON, KC_LEFT, KC_DOWN, KC_RIGHT, XXXXXXX,                  KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_TILD,
-  KC_LSFT, KC_SCLN , XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______, _______,  KC_BACKSLASH, KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE,
-                             _______, _______, _______, _______, _______,  _______, _______, _______
+  KC_LSFT, KC_SCLN , XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_LBRC, KC_RBRC,  KC_BACKSLASH, KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE,
+                             MO(_LOWER), KC_LALT, KC_DELETE,  KC_SPC, KC_ENT, KC_BSPC, KC_LGUI, MO(_RAISE)
 ),
 /* RAISE
  * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -134,13 +137,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                    |      |      |      |/       /         \      \ |      |      |      |
  *                    `----------------------------'           '------''--------------------'
  */
-[_ADJUST] = LAYOUT_wrapper(
+[_ADJUST] = LAYOUT(
   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
-  _____________________ADJUST_L1______________________,                        _____________________ADJUST_R1______________________, 
-  _____________________ADJUST_L2______________________,                        _____________________ADJUST_R2______________________, 
-  _____________________ADJUST_L3______________________, XXXXXXX,      XXXXXXX, _____________________ADJUST_R3______________________,
-                             __________________________________,      __________________________________ 
+  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, TO(_COLEMAK),  TO(_DVORAK), TO(_QWERTY), 
+  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, 
+                             _______, _______, _______,  _______, _______,  _______, _______, _______ 
   ),
+};
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
@@ -167,37 +171,35 @@ const char *read_keylogs(void);
 // void set_timelog(void);
 // const char *read_timelog(void);
 
-// This is my old, factory made OLED task. It has a keylogger on master and lilly logo on slave.
-static void oldOledTask(void) {
-  if (is_keyboard_master()) {
-    // If you want to change the display of OLED, you need to change here
-    oled_write_ln(read_layer_state(), false);
-    oled_write_ln(read_keylog(), false);
-    oled_write_ln(read_keylogs(), false);
-    //oled_write_ln(read_mode_icon(keymap_config.swap_lalt_lgui), false);
-    //oled_write_ln(read_host_led_state(), false);
-    //oled_write_ln(read_timelog(), false);
-  } else {
-    oled_write(read_logo(), false);
+/*
+  // This is my old, factory made OLED task. It has a keylogger on master and lilly logo on slave.
+  static bool void oldOledTask(void) {
+    if (is_keyboard_master()) {
+      // If you want to change the display of OLED, you need to change here
+      oled_write_ln(read_layer_state(), false);
+      oled_write_ln(read_keylog(), false);
+      oled_write_ln(read_keylogs(), false);
+      //oled_write_ln(read_mode_icon(keymap_config.swap_lalt_lgui), false);
+      //oled_write_ln(read_host_led_state(), false);
+      //oled_write_ln(read_timelog(), false);
+    } else {
+      oled_write(read_logo(), false);
+    }
+      return false;
   }
-    return false;
-}
+*/
 
 // ###################################################################### BONGOCAT FUN ################################################################################
 //
 // Render master OLED display
 //
 static void render_status(void) {
-    
+    oled_clear();
     // WPM
     oled_write_P(PSTR("      "), false);
     sprintf(wpm_str, "%03d", get_current_wpm());
     oled_write(wpm_str, false);
     oled_write_P(PSTR("   WPM"), false);
-
-    // GUI keys indicator
-    if (gui_on) oled_write_P(PSTR("\n       "), false);
-    else oled_write_P(PSTR("\n      GUI   OFF"), false);
     
     // Layer indicator
     oled_write_P(PSTR("\n      LAYER "), false);
